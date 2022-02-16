@@ -1,0 +1,14 @@
+{
+  "name": "@project/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "sideEffects": "false",
+  "type": "module",
+  "exports": {
+    "./depoyments/*": "./deployments/*",
+    "./src/*": {
+      "default": "./src/address.js"
+    }
+  }
+}

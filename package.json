@@ -1,0 +1,24 @@
+{
+  "name": "@project/monorepo",
+  "version": "1.0.0",
+  "keywords": [
+    "react",
+    "workspaces",
+    "yarn"
+  ],
+  "private": true,
+  "scripts": {
+    "solidity": "yarn workspace @project/solidity",
+    "solidity:compile": "yarn workspace @project/solidity compile",
+    "react-app": "yarn workspace @project/react-app",
+    "react-app:build": "yarn workspace @project/react-app build",
+    "react-app:eject": "yarn workspace @project/react-app eject",
+    "react-app:start": "yarn workspace @project/react-app start",
+    "react-app:test": "yarn workspace @project/react-app test"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  }
+}

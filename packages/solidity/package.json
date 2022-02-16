@@ -1,0 +1,81 @@
+{
+  "name": "@project/solidity",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "eslintConfig": {
+    "rules": {
+      "import/no-extraneous-dependencies": [
+        "error",
+        {
+          "devDependencies": true,
+          "optionalDependencies": false
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "npm run compile",
+    "clean": "npx hardhat clean",
+    "compile": "npx hardhat compile",
+    "typechain": "npx hardhat typechain",
+    "react": "env DEBUG=hardhat:plugin:react npx hardhat react",
+    "test": "npx hardhat test --deploy-fixture",
+    "test-local": "npx hardhat test --network localhost",
+    "run-script": "npx ts-node --files",
+    "run-local": "env HARDHAT_NETWORK=localhost npx ts-node --files",
+    "start": "env HARDHAT_DEPLOY_FORK=fantom npx hardhat node --hostname 0.0.0.0 --watch",
+    "start-no-fork": "env npx hardhat node --hostname 0.0.0.0 --watch",
+    "deploy": "npx hardhat deploy",
+    "verify": "npx hardhat etherscan-verify",
+    "verify2": "npx hardhat sourcify --write-failing-metadata",
+    "console": "npx hardhat console",
+    "console-local": "npx hardhat console --network localhost",
+    "coverage": "npm run build && npx hardhat coverage --temp artifacts --network coverage"    
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rhlsthrm/solidity-ts-dev-stack-example.git"
+  },
+  "author": "rhlsthrm",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rhlsthrm/solidity-ts-dev-stack-example/issues"
+  },
+  "homepage": "https://github.com/rhlsthrm/solidity-ts-dev-stack-example#readme",
+  "devDependencies": {
+    "@asheliahut/hardhat-react": "npm:@heri16/hardhat-react@^0.4.5",    
+    "@defi-wonderland/smock": "^2.0.7",
+    "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers",
+    "@nomiclabs/hardhat-etherscan": "^2.1.4",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@openzeppelin/contracts": "^4.1.0",
+    "@openzeppelin/contracts-upgradeable": "^4.1.0",
+    "@project/contracts": "^1.0.0",    
+    "@typechain/ethers-v5": "^7.0.0",
+    "@typechain/hardhat": "^2.1.0",
+    "@types/chai": "^4.2.18",
+    "@types/chai-as-promised": "^7.1.1",
+    "@types/fs-extra": "^9.0.11",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^15.0.3",
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "dotenv": "^9.0.2",
+    "erc-payable-token": "^4.1.1",
+    "ethereum-waffle": "^3.3.0",
+    "ethers": "^5.4.1",
+    "hardhat": "^2.2.1",
+    "hardhat-deploy": "^0.8.11",
+    "hardhat-gas-reporter": "^1.0.4",
+    "ts-morph": "^11.0.0",
+    "ts-node": "^9.1.1",
+    "typechain": "^5.0.0",
+    "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "@openzeppelin/hardhat-upgrades": "^1.12.0",
+    "@openzeppelin/upgrades-core": "^1.10.0"
+  }
+}
