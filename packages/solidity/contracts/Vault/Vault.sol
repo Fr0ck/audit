@@ -22,33 +22,34 @@ contract Vault is Context{
     uint256 public amountFrockTokenLoked; // amount token that locked
     uint256 public lockPeriode; // How long the token will be locked before will be able to withdraw
     uint256 public startLock; // start time of token's lock
+    uint256 public endLock; // end time of token's lock
     uint256 public periodPerWithdraw; // Period of each withdrawal, ex : for a month only able to withdraw once
     uint256 public maxAmountPerWithdraw; // Amount fo token that able to withdraw per withdrawal's periode
 
     // Dynamic Parameter
     uint256 totalWithdraw;
-    bool isLocked; // Lock State    
+    bool isLocked; // Lock State
     mapping(uint256 => Withdraw) public withdrawalHistory; // Epoch withdrawal => time of withdrawal
-    
+
     event Locked(
-        address indexed holder, 
-        uint256 amountFrockTokenLoked, 
-        uint256 lockPeriode, 
-        uint256 periodPerWithdraw, 
+        address indexed holder,
+        uint256 amountFrockTokenLoked,
+        uint256 lockPeriode,
+        uint256 periodPerWithdraw,
         uint256 amountPerWithdraw
     );
     event WithdrawToken(uint256 epoch, uint256 withdrawAmount);
     event ClaimDividen(uint256 rewardId, uint256 rewardAmount);
 
     constructor(address _frockToken, address _dividenDistributor) {
-        frockToken = _frockToken;   
-        dividenDistributor = _dividenDistributor;     
+        frockToken = _frockToken;
+        dividenDistributor = _dividenDistributor;
         isLocked = false;
     }
 
     function lockToken(
         uint256 _amountFrockTokenLoked,
-        uint256 _lockPeriode,    
+        uint256 _lockPeriode,
         uint256 _periodPerWithdraw,
         uint256 _maxAmountPerWithdraw
     ) external {
@@ -67,26 +68,26 @@ contract Vault is Context{
         amountFrockTokenLoked = _amountFrockTokenLoked;
         lockPeriode = _lockPeriode;
         startLock = block.timestamp;
+        endLock = startLock + lockPeriode;
         periodPerWithdraw = _periodPerWithdraw;
-        maxAmountPerWithdraw = _maxAmountPerWithdraw;        
+        maxAmountPerWithdraw = _maxAmountPerWithdraw;
 
         emit Locked(
-            _msgSender(), 
-            _amountFrockTokenLoked, 
-            _lockPeriode, 
-            _periodPerWithdraw, 
+            _msgSender(),
+            _amountFrockTokenLoked,
+            _lockPeriode,
+            _periodPerWithdraw,
             _maxAmountPerWithdraw
         );
     }
 
     function currentEpoch() public view returns(uint256) {
-        require(block.timestamp > startLock + lockPeriode, "Vault: Cannot Calculate Epoch");
-        return (block.timestamp - (startLock + lockPeriode))/periodPerWithdraw;
+        require(block.timestamp > endLock, "Vault: Cannot Calculate Epoch");
+        return (block.timestamp - (endLock))/periodPerWithdraw;
     }
 
     function withdraw(uint256 _withdrawAmount) external {
         require(holder == _msgSender(), "Vault: Not the Holder");
-        require(block.timestamp > startLock + lockPeriode, "Vault: Cannot Withdraw");
         require(_withdrawAmount <= maxAmountPerWithdraw, "Vault: withdrawal exceed limit");
         require((amountFrockTokenLoked - totalWithdraw) >= _withdrawAmount,"Vault: withdrawal exceed stocks");
 
@@ -127,5 +128,5 @@ contract Vault is Context{
 
     // Fallback function is called when msg.data is not empty
     fallback() external payable {}
-    
+
 }

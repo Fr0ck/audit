@@ -107,7 +107,7 @@ describe("Community Offering", async () => {
 
     await expect(
       vault.connect(devTeam).withdraw("0")
-    ).to.be.revertedWith("Vault: Cannot Withdraw")  
+    ).to.be.revertedWith("Vault: Cannot Calculate Epoch")
   })
 
   it('Share Dividen', async() => {
