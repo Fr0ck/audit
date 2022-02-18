@@ -14,7 +14,7 @@ contract FrockTokenV1 is TokenBasic {
 
     uint256 public reflectionPercentage; // Using 2 decimals
     uint256 public treasuryPercentage; // Using 2 decimals
-    uint256 public marketingPercentage; // Using 2 decimals
+    uint256 public marketingPercentage; // Using 2 decimals    
     uint256 public totalTax;
 
     event ReflectionUpdated(address newReflectionAddress);
@@ -23,8 +23,8 @@ contract FrockTokenV1 is TokenBasic {
     event PercentageUpdated(uint256 reflectionPercentage,  uint256 treasuryPercentage, uint256 marketingPercentage);
 
     function setReflection(address newAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        reflection = newAddress;
-        _setIsAddressSetted();
+        reflection = newAddress;    
+        _setIsAddressSetted();    
         emit ReflectionUpdated(newAddress);
     }
 
@@ -44,12 +44,12 @@ contract FrockTokenV1 is TokenBasic {
         isAddressSetted = (reflection != address(0) && treasury != address(0) && marketing != address(0));
     }
 
-    function setPercentage(uint256 reflectionPrctg,  uint256 treasuryPrctg, uint256 marketingPrctg) external onlyRole(DEFAULT_ADMIN_ROLE) {
+     function setPercentage(uint256 reflectionPrctg,  uint256 treasuryPrctg, uint256 marketingPrctg) external onlyRole(DEFAULT_ADMIN_ROLE) {                    
         require(reflectionPrctg + treasuryPrctg + marketingPrctg <= 22_00, "Tax: Maximal Tax is 22%");
         reflectionPercentage = reflectionPrctg;
         treasuryPercentage = treasuryPrctg;
-        marketingPercentage = marketingPrctg;
-        totalTax = reflectionPrctg + treasuryPrctg + marketingPrctg;
+        marketingPercentage = marketingPrctg;  
+        totalTax = reflectionPrctg + treasuryPrctg + marketingPrctg;            
         emit PercentageUpdated(reflectionPrctg, treasuryPrctg, marketingPercentage);
     }
 
@@ -60,8 +60,8 @@ contract FrockTokenV1 is TokenBasic {
     function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
         super._transfer(_msgSender(), recipient, amount);
 
-        _taxDeduction(_msgSender(), recipient, amount);
-
+        _taxDeduction(_msgSender(), recipient, amount);                
+        
         return true;
     }
 
@@ -76,16 +76,16 @@ contract FrockTokenV1 is TokenBasic {
     ) public virtual override returns (bool) {
         super.transferFrom(sender, recipient, amount);
 
-        _taxDeduction(sender, recipient, amount);
+        _taxDeduction(sender, recipient, amount);         
 
         return true;
     }
 
     function _taxDeduction(address sender, address recipient, uint256 amount) internal virtual {
-        if(!(isExcludedFromFees[sender] || isExcludedFromFees[recipient])) {
+        if(!(isExcludedFromFees[sender] || isExcludedFromFees[recipient])) {     
             require(isAddressSetted, "Tax : Address not set correctly");
             require(totalTax > 0, "Tax : Percentage not set correctly");
-
+                          
             // Calculate amount
             uint256 reflectionAmount = reflectionPercentage * amount / 100_00;
             uint256 treasuryAmount = treasuryPercentage * amount / 100_00;
@@ -94,8 +94,8 @@ contract FrockTokenV1 is TokenBasic {
             // Transfer token        
             _transfer(recipient, reflection, reflectionAmount);
             _transfer(recipient, treasury, treasuryAmount);
-            _transfer(recipient, marketing, marketingAmount);
-        }
+            _transfer(recipient, marketing, marketingAmount);            
+        }                                      
     }
-
+  
 }

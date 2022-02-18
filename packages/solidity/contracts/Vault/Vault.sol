@@ -19,7 +19,7 @@ contract Vault is Context{
     address public frockToken; // Address of Frock Token/Token that will be locked
     address public dividenDistributor;
     address public holder; // address of token's holder that lock the token
-    uint256 public amountFrockTokenLoked; // amount token that locked
+    uint256 public amountFrockTokenLocked; // amount token that locked
     uint256 public lockPeriode; // How long the token will be locked before will be able to withdraw
     uint256 public startLock; // start time of token's lock
     uint256 public endLock; // end time of token's lock
@@ -28,56 +28,56 @@ contract Vault is Context{
 
     // Dynamic Parameter
     uint256 totalWithdraw;
-    bool isLocked; // Lock State
+    bool isLocked; // Lock State    
     mapping(uint256 => Withdraw) public withdrawalHistory; // Epoch withdrawal => time of withdrawal
-
+    
     event Locked(
-        address indexed holder,
-        uint256 amountFrockTokenLoked,
-        uint256 lockPeriode,
-        uint256 periodPerWithdraw,
+        address indexed holder, 
+        uint256 amountFrockTokenLocked, 
+        uint256 lockPeriode, 
+        uint256 periodPerWithdraw, 
         uint256 amountPerWithdraw
     );
     event WithdrawToken(uint256 epoch, uint256 withdrawAmount);
     event ClaimDividen(uint256 rewardId, uint256 rewardAmount);
 
     constructor(address _frockToken, address _dividenDistributor) {
-        frockToken = _frockToken;
-        dividenDistributor = _dividenDistributor;
+        frockToken = _frockToken;   
+        dividenDistributor = _dividenDistributor;     
         isLocked = false;
     }
 
     function lockToken(
-        uint256 _amountFrockTokenLoked,
-        uint256 _lockPeriode,
-        uint256 _periodPerWithdraw,
-        uint256 _maxAmountPerWithdraw
+        uint256 amountFrockTokenLockedParam,
+        uint256 lockPeriodeParam,    
+        uint256 periodPerWithdrawParam,
+        uint256 maxAmountPerWithdrawParam
     ) external {
         // Requirement
         require(!isLocked, "Vault: Already Locked");
 
         // Transfer Token
         require(
-            IERC20(frockToken).transferFrom(_msgSender(), address(this), _amountFrockTokenLoked),
+            IERC20(frockToken).transferFrom(_msgSender(), address(this), amountFrockTokenLockedParam),
             "Vault: Transfer Failed"
         );
 
         // Update State
         isLocked = true;
         holder = _msgSender();
-        amountFrockTokenLoked = _amountFrockTokenLoked;
-        lockPeriode = _lockPeriode;
+        amountFrockTokenLocked = amountFrockTokenLockedParam;
+        lockPeriode = lockPeriodeParam;
         startLock = block.timestamp;
         endLock = startLock + lockPeriode;
-        periodPerWithdraw = _periodPerWithdraw;
-        maxAmountPerWithdraw = _maxAmountPerWithdraw;
+        periodPerWithdraw = periodPerWithdrawParam;
+        maxAmountPerWithdraw = maxAmountPerWithdrawParam;        
 
         emit Locked(
-            _msgSender(),
-            _amountFrockTokenLoked,
-            _lockPeriode,
-            _periodPerWithdraw,
-            _maxAmountPerWithdraw
+            _msgSender(), 
+            amountFrockTokenLockedParam, 
+            lockPeriodeParam, 
+            periodPerWithdrawParam, 
+            maxAmountPerWithdrawParam
         );
     }
 
@@ -86,28 +86,28 @@ contract Vault is Context{
         return (block.timestamp - (endLock))/periodPerWithdraw;
     }
 
-    function withdraw(uint256 _withdrawAmount) external {
-        require(holder == _msgSender(), "Vault: Not the Holder");
-        require(_withdrawAmount <= maxAmountPerWithdraw, "Vault: withdrawal exceed limit");
-        require((amountFrockTokenLoked - totalWithdraw) >= _withdrawAmount,"Vault: withdrawal exceed stocks");
+    function withdraw(uint256 withdrawAmount) external {
+        require(holder == _msgSender(), "Vault: Not the Holder");        
+        require(withdrawAmount <= maxAmountPerWithdraw, "Vault: withdrawal exceed limit");
+        require((amountFrockTokenLocked - totalWithdraw) >= withdrawAmount,"Vault: withdrawal exceed stocks");
 
         uint256 epoch = currentEpoch();
         require(withdrawalHistory[epoch].withdrawTime == 0, "Vault: Already Withdraw for This Period");
 
         // Update Value
-        withdrawalHistory[epoch] = Withdraw(_withdrawAmount, block.timestamp);
-        totalWithdraw += _withdrawAmount;
+        withdrawalHistory[epoch] = Withdraw(withdrawAmount, block.timestamp);
+        totalWithdraw += withdrawAmount;
 
         // Transfer Token
         require(
-            IERC20(frockToken).transfer(holder, _withdrawAmount),
+            IERC20(frockToken).transfer(holder, withdrawAmount),
             "Vault: Transfer Failed"
         );
 
-        emit WithdrawToken(epoch, _withdrawAmount);
+        emit WithdrawToken(epoch, withdrawAmount);
     }
 
-    function claimDividen(uint256 rewardId) public returns(uint256 rewardAmount ) {
+    function claimDividen(uint256 rewardId) external returns(uint256 rewardAmount ) {
         if(IERC165Upgradeable(dividenDistributor).supportsInterface(DIVIDEN_DISTRIBUTOR)) {
             IDividenDistributor(dividenDistributor).claimReward(rewardId);
             rewardAmount = address(this).balance;
@@ -128,5 +128,5 @@ contract Vault is Context{
 
     // Fallback function is called when msg.data is not empty
     fallback() external payable {}
-
+    
 }

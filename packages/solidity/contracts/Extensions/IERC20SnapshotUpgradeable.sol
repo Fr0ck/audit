@@ -8,4 +8,6 @@ interface IERC20SnapshotUpgradeable {
     function totalSupplyAt(uint256 snapshotId) external view returns (uint256);
 
     function snapshot() external returns (uint256);
+
+    function lastSnapshotId() external view returns (uint256);
 }
